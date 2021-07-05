@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: bb-rsi-naive-initial
+  name: bb-rsi-naive-initial
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: bb-rsi-naive-initial
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: bb-rsi-naive-initial
+    spec:
+      containers:
+        - args:
+            - trade
+            - --logfile
+            - /freqtrade/user_data/logs/freqtrade.log
+            - --db-url
+            - sqlite:////freqtrade/user_data/bb-rsi-naive-initial.tradesv3.sqlite
+            - --config
+            - /freqtrade/user_data/bb-rsi-naive-initial.config.json
+            - --strategy
+            - BBRSINaiveStrategy
+          image: freqtradeorg/freqtrade:stable_pi
+          name: bb-rsi-naive-initial
+          ports:
+            - containerPort: 8080
+          resources: {}
+          volumeMounts:
+            - mountPath: /freqtrade/user_data
+              name: bb-rsi-naive-initial-claim0
+      restartPolicy: Always
+      volumes:
+        - name: bb-rsi-naive-initial-claim0
+          persistentVolumeClaim:
+            claimName: bb-rsi-naive-initial-claim0
+status: {}
